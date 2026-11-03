@@ -14,11 +14,13 @@ def create_app():
     from .routes.auth import bp as auth_bp
     from .routes.main import bp as main_bp
     from .routes.admin import bp as admin_bp
+    from .routes.docente import bp as docente_bp
     from .cli import crear_admin
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(docente_bp)
     app.cli.add_command(crear_admin)
 
     @app.context_processor

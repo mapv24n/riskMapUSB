@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block contenido %}
+<a class="back-link" href="{{ url_for('admin.admin_inicio') }}">← Volver al Administrador</a>
+<section class="card">
+  <h1>Carga masiva de estudiantes a un grupo</h1>
+  <p>Selecciona un grupo y sube un archivo Excel. Los estudiantes se buscan por su código;
+    si no existen, se crean con el programa seleccionado y se vinculan al grupo.</p>
+  <p>Los datos de estudiantes existentes se conservan. Los estudiantes que ya pertenecen al grupo se omiten.
+    Si ocurre un error, se cancela toda la carga.</p>
+  {% if not grupos or not programas %}
+    <p class="notice">Para cargar estudiantes debe haber al menos un grupo y un programa registrados.</p>
+  {% endif %}
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('admin.cargar_estudiantes_grupo') }}">
+    <label for="id_grupo">Grupo de destino</label>
+    <select id="id_grupo" name="id_grupo" required>
+      <option value="">Selecciona un grupo</option>
+      {% for id, codigo, nombre, periodo in grupos %}
+        <option value="{{ id }}">{{ codigo }} · {{ nombre }} · {{ periodo }}</option>
+      {% endfor %}
+    </select>
+    <label for="id_programa">Programa para los estudiantes nuevos</label>
+    <select id="id_programa" name="id_programa" required>
+      <option value="">Selecciona un programa</option>
+      {% for id, nombre in programas %}
+        <option value="{{ id }}">{{ nombre }}</option>
+      {% endfor %}
+    </select>
+    <label for="archivo">Archivo Excel (.xlsx)</label>
+    <input id="archivo" type="file" name="archivo" accept=".xlsx" aria-describedby="formato-excel" required>
+    <p id="formato-excel" class="muted">La primera fila debe contener los encabezados exactos:
+      Código, Estudiante y Correo. Completa las tres columnas en cada fila.
+      Para conservar ceros iniciales, guarda los códigos como texto en Excel.</p>
+    <button type="submit" {% if not grupos or not programas %}disabled{% endif %}>Cargar estudiantes al grupo</button>
+  </form>
+</section>
+{% endblock %}

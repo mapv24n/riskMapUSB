@@ -3,6 +3,9 @@
 <a class="back-link" href="{{ url_for('admin.admin_inicio') }}">← Volver a las tablas</a>
 <section class="card">
   <h1>Administrar: {{ tabla }}</h1>
+  {% if tabla in ('grupo', 'grupo_estudiante', 'estudiante') %}
+    <a class="button" href="{{ url_for('admin.cargar_estudiantes_grupo') }}">Cargar estudiantes a un grupo</a>
+  {% endif %}
   <p class="muted">Los campos de clave primaria automática se generan al guardar.</p>
   <h2>{{ 'Editar registro' if registro else 'Crear registro' }}</h2>
   <form method="post" action="{{ url_for('admin.guardar_registro', tabla=tabla) }}">

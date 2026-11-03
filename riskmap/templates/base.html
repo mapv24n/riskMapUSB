@@ -19,6 +19,7 @@
     <nav aria-label="Navegación principal">
       <span class="user-info">{{ usuario.nombre }}<small>{{ roles.get(usuario.rol, usuario.rol) }}</small></span>
       <a href="{{ url_for('main.inicio') }}">Inicio</a>
+      {% if usuario.rol == 'profesor' %}<a href="{{ url_for('docente.calificaciones') }}">Calificaciones</a>{% endif %}
       {% if usuario.rol == 'administrador' %}<a href="{{ url_for('admin.admin_inicio') }}">Administración</a>{% endif %}
       <a class="logout-link" href="{{ url_for('auth.cerrar_sesion') }}">Cerrar sesión</a>
     </nav>

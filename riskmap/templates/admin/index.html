@@ -2,6 +2,7 @@
 {% block contenido %}
 <section class="card">
   <h1>Módulo Administrador</h1>
+  <a class="button" href="{{ url_for('admin.cargar_estudiantes_grupo') }}">Cargar estudiantes a un grupo</a>
   <p>Selecciona una tabla para consultar y administrar sus registros.</p>
   <div class="grid">
     {% for tabla in tablas %}

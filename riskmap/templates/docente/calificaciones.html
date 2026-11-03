@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block contenido %}
+<a class="back-link" href="{{ url_for('main.inicio') }}">← Volver al inicio</a>
+<section class="card">
+  <h1>Calificaciones de mis grupos</h1>
+  <p>Selecciona uno de tus grupos para consultar sus notas y cargar calificaciones desde Excel.</p>
+  {% if grupos %}
+    <form method="get" action="{{ url_for('docente.calificaciones') }}">
+      <label for="id_grupo">Grupo asignado</label>
+      <select id="id_grupo" name="id_grupo" required>
+        <option value="">Selecciona un grupo</option>
+        {% for g in grupos %}
+          <option value="{{ g.id_grupo }}" {% if grupo and grupo.id_grupo == g.id_grupo %}selected{% endif %}>{{ g.cod_grupo }} · {{ g.nombre }} · {{ g.asignatura }} · {{ g.periodo }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit">Consultar grupo</button>
+    </form>
+  {% else %}
+    <p class="notice">No tienes grupos asignados. Solicita al administrador que compruebe tus grupos
+      y que tu cuenta y tu registro docente tengan el mismo correo.</p>
+  {% endif %}
+</section>
+{% if grupo %}
+<section class="card">
+  <h2>Cargar calificaciones: {{ grupo.cod_grupo }} · {{ grupo.asignatura }} · {{ grupo.periodo }}</h2>
+  <p>El Excel puede contener las columnas <strong>#</strong>, <strong>Código</strong>,
+    <strong>Estudiante</strong>, <strong>Correo</strong>, <strong>P1</strong>, <strong>P2</strong> y <strong>Exa</strong>.
+    Los encabezados pueden estar en cualquiera de las primeras tres filas.</p>
+  <p>Se identifica al estudiante por <strong>Código</strong> y se guardan <strong>P1</strong> (corte 1),
+    <strong>P2</strong> (corte 2) y <strong>Exa</strong> (corte 3). Las columnas #, Estudiante y Correo
+    son informativas y no actualizan los datos del estudiante.</p>
+  <p>Las notas presentes reemplazan las guardadas del mismo corte. Las celdas vacías conservan las notas anteriores.
+    Solo se aceptan estudiantes vinculados a este grupo. Si ocurre un error, se cancela toda la carga.</p>
+  <form method="post" action="{{ url_for('docente.cargar_calificaciones', id_grupo=grupo.id_grupo) }}" enctype="multipart/form-data">
+    <label for="archivo">Archivo Excel (.xlsx)</label>
+    <input id="archivo" name="archivo" type="file" accept=".xlsx" aria-describedby="formato-notas" required>
+    <p id="formato-notas" class="muted">Notas entre 0 y 9,99, con hasta dos decimales. Se admite coma o punto decimal.
+      Guarda los códigos como texto para conservar ceros iniciales. Cada código debe aparecer una sola vez.</p>
+    <button type="submit" {% if not estudiantes %}disabled{% endif %}>Guardar calificaciones del grupo</button>
+  </form>
+</section>
+<section class="card">
+  <h2>Detalle de calificaciones</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th scope="col">Código</th><th scope="col">Estudiante</th><th scope="col">P1</th><th scope="col">P2</th><th scope="col">Exa</th></tr></thead>
+      <tbody>
+        {% for estudiante in estudiantes %}
+        <tr>
+          <td>{{ estudiante.cod_estudiante }}</td><td>{{ estudiante.nombre }}</td>
+          {% for columna in ('corte_1', 'corte_2', 'corte_3') %}
+            <td>{{ estudiante[columna] if estudiante[columna] is not none else 'Pendiente' }}</td>
+          {% endfor %}
+        </tr>
+        {% else %}
+          <tr><td colspan="5">No hay estudiantes vinculados a este grupo. Solicita al administrador que los agregue.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

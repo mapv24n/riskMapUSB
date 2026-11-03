@@ -23,3 +23,13 @@ def requiere_admin(funcion):
     return envoltura
 
 
+def requiere_profesor(funcion):
+    @wraps(funcion)
+    @requiere_login
+    def envoltura(*args, **kwargs):
+        if session["usuario"].get("rol") != "profesor":
+            abort(403)
+        return funcion(*args, **kwargs)
+    return envoltura
+
+
